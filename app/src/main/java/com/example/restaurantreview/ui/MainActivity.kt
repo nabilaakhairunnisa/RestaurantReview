@@ -1,5 +1,6 @@
 package com.example.restaurantreview.ui
 
+
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -12,6 +13,8 @@ import com.bumptech.glide.Glide
 import com.example.restaurantreview.data.response.CustomerReviewsItem
 import com.example.restaurantreview.data.response.Restaurant
 import com.example.restaurantreview.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,7 +28,11 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
-        val mainViewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory()).get(MainViewModel::class.java)
+        val mainViewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        ).get(MainViewModel::class.java)
+
         mainViewModel.restaurant.observe(this) { restaurant ->
             setRestaurantData(restaurant)
         }
@@ -38,8 +45,15 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.listReview.observe(this) { consumerReviews ->
             setReviewData(consumerReviews)
         }
+
         mainViewModel.isLoading.observe(this) {
             showLoading(it)
+        }
+
+        mainViewModel.snackbarText.observe(this) {
+            it.getContentIfNotHandled()?.let { snackBarText ->
+                Snackbar.make(window.decorView.rootView, snackBarText, Snackbar.LENGTH_SHORT).show()
+            }
         }
 
         binding.btnSend.setOnClickListener { view ->
